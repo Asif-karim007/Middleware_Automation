@@ -1,46 +1,3 @@
-
-#         # FINDING AND DELETING CONTENT
-# # ONLY FINDING IN first PAGE
-#         # other_element = self.driver.find_element(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/ul/li[3]")
-#         # other_element.click()
-
-
-
-
-
-
-#         # WebDriverWait(self.driver, 40).until(EC.visibility_of_element_located((By.LINK_TEXT, "Edit")))
-
-
-#         # rows = self.driver.find_elements(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr")
-#         # for row in rows:
-#         #     cells = row.find_elements(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr/td[1]")
-#         #     for cell in cells:
-#         #         if "Edited" in cell.text:
-#         #             print("Succesfully edited a new Sub group-topic")
-#         #             WebDriverWait(self.driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr[8]/td[2]/div/div[2]/button/span[2]")))
-#         #             edit_button = row.find_element(By.XPATH, "//*[@id='__next']/div/div/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr[2]/td[2]/div/div[2]/button")
-#         #             edit_button.click()
-#         #             time.sleep(2)
-#         #             WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]")))
-#         #             self.driver.find_element(By.XPATH,"/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]/span").click()
-#         #             print("Succesfully deleted a new Sub group-topic")
-#         #             found_edited = True
-#         #             break 
-#         #     if found_edited:
-#         #         break
-   
-
-
-
-#         # time.sleep(5)
-
-
-
-
-
-
-
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -62,36 +19,28 @@ class SubGroupInteraction:
             print("Successfully opened SubGroups TAB")
             WebDriverWait(self.driver, 50).until(EC.visibility_of_element_located((By.LINK_TEXT, "Edit")))
             print("Successfully loaded content of Sub group")
+            time.sleep(3)
         except Exception:
             print("Failed to find or click the 'Sub Groups' menu item:")
-    time.sleep(5)
+    
     def create_new_content(self, text):
         try:
-            try:
-                create_button = WebDriverWait(self,50).until(EC.visibility_of_element_located(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[1]/span/div/div/a/button"))
-                time.sleep(3)
-                create_button.click()
-                time.sleep(3)
-            except Exception:
-                print("can cot click on create button")
-            WebDriverWait(self,50).until(EC.visibility_of_element_located(By.LINK_TEXT,"Create sub group"))
-            input_field = self.driver.find_element(By.XPATH, "//*[@id='subGroup']")
-            input_field.clear()
-            input_field.send_keys(text)
+            create_button = self.driver.find_element(By.XPATH, "//button[@class='ant-btn css-dev-only-do-not-override-w8172h ant-btn-primary refine-create-button']")
+            self.driver.execute_script("arguments[0].click();", create_button)
             time.sleep(3)
-            save_button = WebDriverWait(self.driver, 50).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Save')]"))
-            )
-            save_button.click()
+            input_field = self.driver.find_element(By.XPATH, "//*[@id='subGroup']")
+            
+            input_field.send_keys(text)
+            # save_button = self.driver.find_element((By.XPATH, "//button[contains(., 'Save')]"))      
 
-            success_message = WebDriverWait(self.driver, 50).until(
-                EC.visibility_of_element_located((By.XPATH, "/html/body/div[5]/div/div/div/div/div[2]"))
-            )
-            print("Successfully created a new Sub group-topic:", success_message.text)
+            save_button = WebDriverWait(self.driver, 50).until(EC.visibility_of_element_located((By.XPATH, "//button[contains(., 'Save')]")))
+            self.driver.execute_script("arguments[0].click();", save_button)      
+            # save_button.click()
+            time.sleep(3)
+            print("Succesfully created new Sub group-topic")
         except Exception :
             print("Error while creating new Sub group-topic:")
     
-    time.sleep(5)
     def edit_sub_group_content(self, old_text, new_text):
         try:
             WebDriverWait(self.driver, 50).until(EC.visibility_of_element_located((By.LINK_TEXT, "Edit")))
@@ -123,7 +72,7 @@ class SubGroupInteraction:
                                 EC.visibility_of_element_located((By.XPATH, "/html/body/div[5]/div/div/div/div/div[2]"))
                             )
                             print("Successfully edited the content.")
-                            break
+                            return
                         except Exception:
                             print("Element found but did not edit")
 
@@ -133,4 +82,29 @@ class SubGroupInteraction:
             print("Failed to edit content:")
 
 
+    def delete_sub_group_content(self):
+        try:
+            WebDriverWait(self.driver, 50).until(EC.visibility_of_element_located((By.LINK_TEXT, "Edit")))
+            rows = self.driver.find_elements(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr")
+            found = False
+            for row in rows:
+                cells = row.find_elements(By.XPATH, ".//td[1]")
+                for cell in cells:
+                    if "Edited Content" in cell.text:
+                        print("Succesfully edited a new Sub group-topic")
+                        try:
+                            time.sleep(3)
+                            delete_button = row.find_element(By.XPATH, f".//button[.//span[text()='Delete']]")  
+                            self.driver.execute_script("arguments[0].click();", delete_button)
+                            time.sleep(3)
+                            self.driver.find_element(By.XPATH,"/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]/span").click()
+                            print("Succesfully deleted a new Sub group-topic")
+                            time.sleep(3)
+                            return
+                        except Exception:
+                            print("Element found but did not delete")
 
+        except Exception:
+            print("Failed to delete content:")
+
+    

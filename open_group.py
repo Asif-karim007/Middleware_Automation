@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-class MenuInteraction:
+class GroupInteraction:
     def __init__(self, driver):
         self.driver = driver
     
@@ -140,4 +140,4 @@ class MenuInteraction:
                 print("DELETING Content does not exist.")
 
 
-        time.sleep(10)
+        time.sleep(5)

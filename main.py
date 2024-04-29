@@ -6,8 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from open_topics import MenuInteraction as TopicsInteraction
-from open_group import MenuInteraction as GroupInteraction
+from open_topics import Topics as TopicsInteraction
+from open_group import GroupInteraction as GroupInteractionobj
 from open_subGroup import SubGroupInteraction
 
 
@@ -47,7 +47,7 @@ driver = webdriver.Chrome(service=service_obj)
 
 menu_interaction = MenuInteraction(driver)
 topics_interaction = TopicsInteraction(driver)
-group_interaction = GroupInteraction(driver)
+group_interaction = GroupInteractionobj(driver)
 sub_group_interaction = SubGroupInteraction(driver)
 
 
@@ -55,7 +55,7 @@ sub_group_interaction = SubGroupInteraction(driver)
 menu_interaction.login("admin", "1q2w3E*")
 menu_interaction._click_menu_item()
 # # topics_interaction.open_topics()
-# group_interaction.open_group()
+group_interaction.open_group()
 
 time.sleep(5)
 
@@ -64,6 +64,7 @@ sub_group_interaction.open_sub_group()
 sub_group_interaction.create_new_content("Creating new content")
 time.sleep(5)
 sub_group_interaction.edit_sub_group_content("Creating new content", " Edited Content")
+sub_group_interaction.delete_sub_group_content()
 
 
 
