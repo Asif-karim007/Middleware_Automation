@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from open_topics import Topics as TopicsInteraction
 from open_group import GroupInteraction as GroupInteractionobj
 from open_subGroup import SubGroupInteraction
+from open_bodyRegion import BodyRegion
 
 
 class MenuInteraction:
@@ -49,6 +50,7 @@ menu_interaction = MenuInteraction(driver)
 topics_interaction = TopicsInteraction(driver)
 group_interaction = GroupInteractionobj(driver)
 sub_group_interaction = SubGroupInteraction(driver)
+body_region_interaction = BodyRegion(driver)
 
 
 
@@ -66,6 +68,13 @@ time.sleep(5)
 sub_group_interaction.edit_sub_group_content("Creating new content", " Edited Content")
 sub_group_interaction.delete_sub_group_content()
 
+
+# BODYREGIONFUNCTIONS
+body_region_interaction.open_sub_group()
+body_region_interaction.create_new_content("Creating new content")
+time.sleep(3)
+body_region_interaction.edit_sub_group_content("Creating new content", " Edited Content")
+body_region_interaction.delete_sub_group_content()
 
 
 driver.quit()
