@@ -100,9 +100,35 @@ class SubGroupInteraction:
                             self.driver.find_element(By.XPATH,"/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]/span").click()
                             print("Succesfully deleted a new Sub group-topic")
                             time.sleep(3)
+                            found = True
                             return
                         except Exception:
                             print("Element found but did not delete")
+
+                if found:
+                    break
+            if not found:
+                other_element = self.driver.find_element(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/ul/li[3]")
+                other_element.click()
+                time.sleep(3)
+                WebDriverWait(self.driver, 50).until(EC.visibility_of_element_located((By.LINK_TEXT, "Edit")))
+                rows = self.driver.find_elements(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr")
+                for row in rows:
+                    cells = row.find_elements(By.XPATH, ".//td[1]")
+                    for cell in cells:
+                        if "Edited Content" in cell.text:
+                            print("Succesfully edited a new Sub group-topic")
+                            try:
+                                time.sleep(3)
+                                delete_button = row.find_element(By.XPATH, f".//button[.//span[text()='Delete']]")  
+                                self.driver.execute_script("arguments[0].click();", delete_button)
+                                time.sleep(3)
+                                self.driver.find_element(By.XPATH,"/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]/span").click()
+                                print("Succesfully deleted a new Sub group-topic")
+                                time.sleep(3)
+                                return
+                            except Exception:
+                                print("Element found but did not delete")
 
         except Exception:
             print("Failed to delete content:")
