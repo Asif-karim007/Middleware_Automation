@@ -37,9 +37,9 @@ class BodyRegion:
             self.driver.execute_script("arguments[0].click();", save_button)      
             # save_button.click()
             time.sleep(3)
-            print("Succesfully created new Sub Body Region")
+            print("Succesfully created new Body Region")
         except Exception :
-            print("Error while creating new Sub Body Region")
+            print("Error while creating new Body Region")
     
     def edit_sub_group_content(self, old_text, new_text):
         try:

@@ -22,122 +22,97 @@ class GroupInteraction:
                 print("Groups page is taking too much time", e)
         except Exception as e:
             print("Failed to find or click the 'Groups' menu item:", e)
-# CREATE
-        text= "Creating new content"
-        self.driver.find_element(By.XPATH,"//*[@id='__next']/div/div[2]/main/div/div/div/div[1]/span/div/div/a/button").click()
-        
-        self.driver.find_element(By.XPATH,"//*[@id='group']").send_keys(text)
 
-        time.sleep(3)
-
-        save_button = WebDriverWait(self.driver, 50).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Save')]")))
-        save_button.click()
-
-        success_message = WebDriverWait(self.driver, 50).until(
-                EC.visibility_of_element_located((By.XPATH, "/html/body/div[5]/div/div/div/div/div[2]"))
-            )
-        print("Successfully created app/topic-group:", success_message.text)
-     
-
-        time.sleep(3)
-# SEARCHING FOR NEW CREATED CONTENT
-        created_content = False
-        rows = WebDriverWait(self.driver, 50).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "tbody.ant-table-tbody > tr.ant-table-row.ant-table-row-level-0")))
-        for row in rows:
-            cells = row.find_elements(By.CLASS_NAME, "ant-table-cell")
-            for cell in cells:
-                if text in cell.text:
-                    edit_button = row.find_element(By.XPATH, ".//a[contains(@href, '/group/edit')]")
-                    edit_button.click()
-                    created_content = True
-                    break
-            if created_content:
-                break
-
-        if not created_content:
-            try:
-                other_element = self.driver.find_element(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/ul/li[3]")
-                other_element.click()
-                WebDriverWait(self.driver, 40).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tbody.ant-table-tbody > tr.ant-table-row.ant-table-row-level-0")))
-
-                rows = self.driver.find_elements(By.CSS_SELECTOR, "tbody.ant-table-tbody > tr.ant-table-row.ant-table-row-level-0")
-                for row in rows:
-                    cells = row.find_elements(By.CLASS_NAME, "ant-table-cell")
-                    for cell in cells:
-                        if text in cell.text:
-                            edit_button = row.find_element(By.XPATH, ".//a[contains(@href, '/group/edit')]")
-                            edit_button.click()
-                            break
-            except Exception:
-                print("EDITING content does not exist.")
-
-        
-# EDITING THE CREATED CONTENT
+    def create_new_content(self, text):
         try:
-            input_element = WebDriverWait(self.driver, 50).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[datatype="edit-group"]'))
-            )
-            input_element.click()
+            self.driver.find_element(By.XPATH,"//*[@id='__next']/div/div[2]/main/div/div/div/div[1]/span/div/div/a/button").click()
+            self.driver.find_element(By.XPATH,"//*[@id='group']").send_keys(text)
             time.sleep(3)
-            input_element.clear()
-            input_element.send_keys(" Edited")
+            save_button = WebDriverWait(self.driver, 50).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Save')]")))
+            save_button.click()
+            success_message = WebDriverWait(self.driver, 50).until(
+                    EC.visibility_of_element_located((By.XPATH, "/html/body/div[5]/div/div/div/div/div[2]"))
+                )
+            print("Successfully created app/topic-group:", success_message.text)
             time.sleep(3)
-            WebDriverWait(self.driver, 50).until(EC.element_to_be_clickable((By.XPATH,"/html/body/div[4]/div/div[2]/div/div[2]/div/div[3]/button[2]/span")))
-            try:
-                self.driver.find_element(By.XPATH,"/html/body/div[4]/div/div[2]/div/div[2]/div/div[3]/button[2]/span").click()
-            except Exception:
-                print("Can not edit")
-        except Exception as e:
-            print(f"Error while editing: {e}")
+        except Exception :
+            print("Error while creating new group-topic:")
 
-
-
-
-        time.sleep(3)
-
-# FINDING AND DELETING CONTENT
-        Edited_content = False
-        rows = self.driver.find_elements(By.CSS_SELECTOR, "tbody.ant-table-tbody > tr.ant-table-row.ant-table-row-level-0")
-        for row in rows:
-            cells = row.find_elements(By.CLASS_NAME, "ant-table-cell")
-            for cell in cells:
-                if "Edited" in cell.text:
-                    print("Succesfully edited a new group-topic")
-                    WebDriverWait(self.driver, 40).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr[8]/td[2]/div/div[2]/button/span[2]")))
-                    edit_button = row.find_element(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr[8]/td[2]/div/div[2]/button/span[2]")
-                    edit_button.click()
-                    WebDriverWait(self.driver, 50).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]")))
-                    self.driver.find_element(By.XPATH,"/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]").click()
-                    print("Succesfully deleted a new group-topic")
-                    Edited_content = True
+    def edit_group_content(self,old_text, new_text):
+        try:
+            created_content = False
+            rows = self.driver.find_elements(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr")
+            for row in rows:
+                cells = row.find_elements(By.XPATH, ".//td[1]")
+                for cell in cells:
+                    if old_text in cell.text:
+                        edit_button = row.find_element(By.XPATH, ".//a[contains(@href, '/group/edit')]")
+                        edit_button.click()
+                        input_field = WebDriverWait(self.driver, 50).until(
+                            EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[datatype="edit-group"]'))
+                        )
+                        input_field.clear()
+                        input_field.send_keys(new_text)
+                        save_button = WebDriverWait(self.driver, 50).until(
+                            EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div/div[2]/div/div[2]/div/div[3]/button[2]/span"))
+                        )
+                        save_button.click()
+                        time.sleep(3)
+                        print("Successfully edited the group content.")
+                        created_content = True
+                        return
+                if created_content:
                     break
-                 
-            if Edited_content:
-                break
 
-        if not Edited_content:
-            try:
-                other_element = self.driver.find_element(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/ul/li[3]")
-                other_element.click()
-                WebDriverWait(self.driver, 40).until(EC.visibility_of_element_located((By.LINK_TEXT, "Edit")))
+            if not created_content:
+                try:
+                    other_element = self.driver.find_element(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/ul/li[3]")
+                    other_element.click()
+                    time.sleep(3)
+                    rows = self.driver.find_elements(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr")
+                    for row in rows:
+                        cells = row.find_elements(By.XPATH, ".//td[1]")
+                        for cell in cells:
+                            if old_text in cell.text:
+                                edit_button = row.find_element(By.XPATH, ".//a[contains(@href, '/group/edit')]")
+                                edit_button.click()
+                                input_field = WebDriverWait(self.driver, 50).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[datatype="edit-group"]')))
+                                input_field.clear()
+                                input_field.send_keys(new_text)
+                                save_button = WebDriverWait(self.driver, 50).until(
+                                    EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div/div[2]/div/div[2]/div/div[3]/button[2]/span"))
+                                )
+                                save_button.click()
+                                time.sleep(3)
+                                print("Successfully edited the group content.")
+                                return
+                except Exception:
+                    print("EDITING content does not exist.")
+        except Exception:
+            print("Failed to edit content:")  
+        
+    def delete_group_content(self):
+        try:
+            WebDriverWait(self.driver, 50).until(EC.visibility_of_element_located((By.LINK_TEXT, "Edit")))
+            rows = self.driver.find_elements(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr")
+            found = False
+            for row in rows:
+                cells = row.find_elements(By.XPATH, ".//td[1]")
+                for cell in cells:
+                    if "Edited Content" in cell.text:
+                        print("Succesfully edited a new Sub group-topic")
+                        try:
+                            time.sleep(3)
+                            delete_button = row.find_element(By.XPATH, f".//button[.//span[text()='Delete']]")  
+                            self.driver.execute_script("arguments[0].click();", delete_button)
+                            time.sleep(3)
+                            self.driver.find_element(By.XPATH,"/html/body/div[5]/div/div[2]/div/div/div/div[2]/button[2]/span").click()
+                            print("Succesfully deleted a new Sub group-topic")
+                            time.sleep(3)
+                            return
+                        except Exception:
+                            print("Element found but did not delete")
 
-                rows = self.driver.find_elements(By.CSS_SELECTOR, "tbody.ant-table-tbody > tr.ant-table-row.ant-table-row-level-0")
-                for row in rows:
-                    cells = row.find_elements(By.CLASS_NAME, "ant-table-cell")
-                    for cell in cells:
-                        if "Edited" in cell.text:
-                            print("Succesfully edited a new group-topic")
-                            WebDriverWait(self.driver, 50).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr[8]/td[2]/div/div[2]/button/span[2]")))
-                            edit_button = row.find_element(By.XPATH, "//*[@id='__next']/div/div[2]/main/div/div/div/div[2]/div/div/div/div/div/div/div/table/tbody/tr[8]/td[2]/div/div[2]/button/span[2]")
-                            edit_button.click()
-                            WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[6]/div/div[2]/div/div/div/div[2]/button[2]/span")))
-                            self.driver.find_element(By.XPATH,"/html/body/div[6]/div/div[2]/div/div/div/div[2]/button[2]/span").click()
-                            print("Succesfully deleted a new group-topic")
-                            break
-                            # WebDriverWait(driver, 40).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div[5]/div/div/div/div/div[2]"))        
-            except Exception:
-                print("DELETING Content does not exist.")
-
-
-        time.sleep(5)
+        except Exception:
+            print("Failed to delete content:")

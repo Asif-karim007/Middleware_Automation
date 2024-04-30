@@ -33,7 +33,7 @@ class MenuInteraction:
             if expected_msg == msg:
                 print(expected_msg)
         except Exception:
-            print("Error occured while login")
+            print("Error occurred while login")
 
     
     def _click_menu_item(self):
@@ -57,9 +57,15 @@ body_region_interaction = BodyRegion(driver)
 menu_interaction.login("admin", "1q2w3E*")
 menu_interaction._click_menu_item()
 # # topics_interaction.open_topics()
-group_interaction.open_group()
 
+
+
+group_interaction.open_group()
+group_interaction.create_new_content("Creating new content")
 time.sleep(5)
+group_interaction.edit_group_content("Creating new content", " Edited Content")
+group_interaction.delete_group_content()
+
 
 # SUBGROUPFUNCTIONS
 sub_group_interaction.open_sub_group()
